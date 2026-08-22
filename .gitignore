@@ -1,0 +1,17 @@
+# Build output
+/peeporun
+/peeporun.exe
+/dist/
+
+# Go
+*.test
+*.out
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
