@@ -68,6 +68,19 @@ brews:
     test: |
       system "#{bin}/peeporun", "--version"
 
+scoops:
+  - name: peeporun
+    ids:
+      - default
+    repository:
+      owner: cometpuppy
+      name: scoop-peeporun
+      branch: main
+      token: "{{ .Env.SCOOP_BUCKET_GITHUB_TOKEN }}"
+    directory: bucket
+    homepage: "https://github.com/cometpuppy/peeporun"
+    description: "A TUI hit counter for Dark Souls, with OBS overlay and theme support"
+
 release:
   github:
     owner: cometpuppy
