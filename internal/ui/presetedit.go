@@ -136,6 +136,7 @@ func (a *App) commitEditField() {
 		p.Splits = append(p.Splits, val)
 		a.editCursor = len(p.Splits) - 1
 	}
+	a.syncSaveShapeFor(*p)
 	a.persist()
 }
 
@@ -152,6 +153,7 @@ func (a *App) doDeleteSplit() {
 	if a.editCursor < -2 {
 		a.editCursor = -2
 	}
+	a.syncSaveShapeFor(*p)
 	a.persist()
 }
 

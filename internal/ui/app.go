@@ -166,13 +166,19 @@ func (a *App) currentPreset() config.Preset {
 	return a.presets[a.presetIdx]
 }
 
-// syncSaveShape ensures the save entry for the current preset has state
-// slices matching the preset's current split count (handles edits).
+// syncSaveShape ensures the save entry for the currently loaded tracker
+// preset has state slices matching its current split count.
 func (a *App) syncSaveShape() {
 	if len(a.presets) == 0 {
 		return
 	}
-	p := a.currentPreset()
+	a.syncSaveShapeFor(a.currentPreset())
+}
+
+// syncSaveShapeFor does the same thing but for an arbitrary preset -
+// needed when editing a preset that isn't necessarily the one currently
+// loaded in the tracker (e.g. editing preset B while preset A is active).
+func (a *App) syncSaveShapeFor(p config.Preset) {
 	ps := a.save.Presets[p.ID]
 
 	for len(ps.Current) < len(p.Splits) {
