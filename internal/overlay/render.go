@@ -91,6 +91,9 @@ func Render(d Data, refreshSeconds float64, accent string) string {
   .header, .row, .total {
     display: contents;
   }
+  .icon, .name, .hits, .pb {
+    line-height: 20px;
+  }
   .icon { text-align: center; padding: 2px 4px; }
   .name { padding: 2px 12px 2px 4px; }
   .hits, .pb { text-align: right; padding: 2px 4px; }
