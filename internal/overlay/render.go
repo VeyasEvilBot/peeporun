@@ -36,10 +36,10 @@ func Render(d Data, refreshSeconds float64, accent string) string {
 
 	var rows strings.Builder
 	for _, s := range d.Splits {
-		class, icon := rowStyle(s)
+		class := rowStyle(s)
 		rows.WriteString(fmt.Sprintf(
-			`<div class="row %s"><span class="icon">%s</span><span class="name">%s</span><span class="hits">%d</span><span class="pb">%d</span></div>`+"\n",
-			class, icon, html.EscapeString(s.Name), s.Hits, s.PB,
+			`<div class="row %s"><span class="name">%s</span><span class="hits">%d</span><span class="pb">%d</span></div>`+"\n",
+			class, html.EscapeString(s.Name), s.Hits, s.PB,
 		))
 	}
 
@@ -61,14 +61,13 @@ func Render(d Data, refreshSeconds float64, accent string) string {
   }
   .panel {
     display: inline-grid;
-    grid-template-columns: 22px 1fr auto auto;
+    grid-template-columns: auto auto auto;
     row-gap: 2px;
     column-gap: 0;
     background: rgba(20, 20, 20, 0.72);
     border: 2px solid %[2]s;
     border-radius: 10px;
     padding: 14px 20px;
-    min-width: 260px;
   }
   .game, .category {
     grid-column: 1 / -1;
@@ -91,11 +90,10 @@ func Render(d Data, refreshSeconds float64, accent string) string {
   .header, .row, .total {
     display: contents;
   }
-  .icon, .name, .hits, .pb {
+  .name, .hits, .pb {
     line-height: 20px;
   }
-  .icon { text-align: center; padding: 2px 4px; }
-  .name { padding: 2px 12px 2px 4px; }
+  .name { padding: 2px 12px 2px 0; }
   .hits, .pb { text-align: right; padding: 2px 4px; }
   .header > * {
     color: #9a9a9a;
@@ -108,8 +106,14 @@ func Render(d Data, refreshSeconds float64, accent string) string {
   .row.hit > * { color: #ff5f5f; }
   .row.active-clear > * { background: #98c379; color: #1a1a1a; }
   .row.active-hit > * { background: #e08a90; color: #1a1a1a; }
-  .row.active-clear > .icon, .row.active-hit > .icon { border-radius: 4px 0 0 4px; }
+  .row.active-clear > .name, .row.active-hit > .name { border-radius: 4px 0 0 4px; }
   .row.active-clear > .pb, .row.active-hit > .pb { border-radius: 0 4px 4px 0; }
+  /* tiny background bleed past the row's own edges - box-shadow is
+     paint-only, so it doesn't shift the actual text position at all. */
+  .row.active-clear > .name { box-shadow: -4px 0 0 0 #98c379; }
+  .row.active-hit > .name { box-shadow: -4px 0 0 0 #e08a90; }
+  .row.active-clear > .pb { box-shadow: 4px 0 0 0 #98c379; }
+  .row.active-hit > .pb { box-shadow: 4px 0 0 0 #e08a90; }
   .total > * {
     color: %[2]s;
     font-weight: bold;
@@ -122,26 +126,26 @@ func Render(d Data, refreshSeconds float64, accent string) string {
 <div class="panel">
   <div class="game">%[3]s</div>
   <div class="category">%[4]s</div>
-  <div class="header"><span class="icon"></span><span class="name">Split</span><span class="hits">Hits</span><span class="pb">PB</span></div>
-%[5]s  <div class="total"><span class="icon"></span><span class="name">Total</span><span class="hits">%[6]d</span><span class="pb">%[7]d</span></div>
+  <div class="header"><span class="name">Split</span><span class="hits">Hits</span><span class="pb">PB</span></div>
+%[5]s  <div class="total"><span class="name">Total</span><span class="hits">%[6]d</span><span class="pb">%[7]d</span></div>
 </div>
 </body>
 </html>
 `, refresh, accent, html.EscapeString(orDefault(d.Game, "(untitled)")), html.EscapeString(d.Category), rows.String(), d.TotalHits, d.TotalPB)
 }
 
-func rowStyle(s Split) (class, icon string) {
+func rowStyle(s Split) string {
 	switch {
 	case s.Beaten && s.Hits > 0:
-		return "hit", "\u2717"
+		return "hit"
 	case s.Beaten:
-		return "clear", "\u2713"
+		return "clear"
 	case s.Active && s.Hits > 0:
-		return "active-hit", ""
+		return "active-hit"
 	case s.Active:
-		return "active-clear", ""
+		return "active-clear"
 	default:
-		return "", ""
+		return ""
 	}
 }
 
