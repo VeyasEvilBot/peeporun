@@ -56,6 +56,13 @@ type App struct {
 	editMode      bool
 	editAction    string // "game", "category", "rename-split", "add-split"
 	input         textinput.Model
+
+	// autoNamedIDs tracks preset IDs still eligible for maybeAutoRenamePresetID
+	// to keep following Game/Category as they're typed - covers both the
+	// initial "new-preset" placeholder and any ID that itself came from a
+	// previous auto-rename, so setting Game then Category in the same
+	// session chains correctly instead of only renaming once.
+	autoNamedIDs map[string]bool
 }
 
 func NewApp(kb config.Keybinds, presets []config.Preset, save config.SaveFile, overlaySettings config.OverlaySettings, theme config.ThemeSettings) *App {
@@ -66,13 +73,14 @@ func NewApp(kb config.Keybinds, presets []config.Preset, save config.SaveFile, o
 	ti.Width = 40
 
 	a := &App{
-		kb:      kb,
-		presets: presets,
-		save:    save,
-		overlay: overlaySettings,
-		theme:   theme,
-		screen:  screenPresetSelect,
-		input:   ti,
+		kb:           kb,
+		presets:      presets,
+		save:         save,
+		overlay:      overlaySettings,
+		theme:        theme,
+		screen:       screenPresetSelect,
+		input:        ti,
+		autoNamedIDs: map[string]bool{},
 	}
 
 	// resume last preset if we have one
@@ -221,7 +229,7 @@ func (a *App) persist() {
 }
 
 func (a *App) writeOverlay() {
-	data := overlay.Data{}
+	data := overlay.Data{ShowPB: a.theme.ShowPB}
 	if len(a.presets) > 0 && a.presetLoaded {
 		p := a.currentPreset()
 		ps := a.save.Presets[p.ID]

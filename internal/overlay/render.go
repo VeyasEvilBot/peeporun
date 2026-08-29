@@ -23,24 +23,42 @@ type Data struct {
 	Splits    []Split
 	TotalHits int
 	TotalPB   int
+	ShowPB    bool
 }
 
 // Render builds a self-contained HTML document for OBS Browser Source
 // (Local File), auto-refreshing every refreshSeconds to pick up changes.
 // accent is a "#RRGGBB" hex color used for the panel border, titles, and
-// total row, matching the TUI's accent color.
+// total row, matching the TUI's accent color. When d.ShowPB is false, the
+// PB column is omitted entirely (matching the TUI's own show_pb setting).
 func Render(d Data, refreshSeconds float64, accent string) string {
 	if accent == "" {
 		accent = "#FFD400"
+	}
+
+	pbCell := func(v int) string {
+		if !d.ShowPB {
+			return ""
+		}
+		return fmt.Sprintf(`<span class="pb">%d</span>`, v)
 	}
 
 	var rows strings.Builder
 	for _, s := range d.Splits {
 		class := rowStyle(s)
 		rows.WriteString(fmt.Sprintf(
-			`<div class="row %s"><span class="name">%s</span><span class="hits">%d</span><span class="pb">%d</span></div>`+"\n",
-			class, html.EscapeString(s.Name), s.Hits, s.PB,
+			`<div class="row %s"><span class="name">%s</span><span class="hits">%d</span>%s</div>`+"\n",
+			class, html.EscapeString(s.Name), s.Hits, pbCell(s.PB),
 		))
+	}
+
+	columns := "auto auto"
+	headerPB := ""
+	totalPB := ""
+	if d.ShowPB {
+		columns = "auto auto auto"
+		headerPB = `<span class="pb">PB</span>`
+		totalPB = pbCell(d.TotalPB)
 	}
 
 	refresh := strconv.FormatFloat(refreshSeconds, 'f', -1, 64)
@@ -61,7 +79,7 @@ func Render(d Data, refreshSeconds float64, accent string) string {
   }
   .panel {
     display: inline-grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: %[8]s;
     row-gap: 2px;
     column-gap: 0;
     background: rgba(20, 20, 20, 0.72);
@@ -107,13 +125,16 @@ func Render(d Data, refreshSeconds float64, accent string) string {
   .row.active-clear > * { background: #98c379; color: #1a1a1a; }
   .row.active-hit > * { background: #e08a90; color: #1a1a1a; }
   .row.active-clear > .name, .row.active-hit > .name { border-radius: 4px 0 0 4px; }
-  .row.active-clear > .pb, .row.active-hit > .pb { border-radius: 0 4px 4px 0; }
+  /* :last-child (rather than a fixed .pb selector) so the right-side
+     rounding/bleed lands on whichever column is actually last - .pb
+     normally, or .hits when PB is hidden. */
+  .row.active-clear > *:last-child, .row.active-hit > *:last-child { border-radius: 0 4px 4px 0; }
   /* tiny background bleed past the row's own edges - box-shadow is
      paint-only, so it doesn't shift the actual text position at all. */
   .row.active-clear > .name { box-shadow: -4px 0 0 0 #98c379; }
   .row.active-hit > .name { box-shadow: -4px 0 0 0 #e08a90; }
-  .row.active-clear > .pb { box-shadow: 4px 0 0 0 #98c379; }
-  .row.active-hit > .pb { box-shadow: 4px 0 0 0 #e08a90; }
+  .row.active-clear > *:last-child { box-shadow: 4px 0 0 0 #98c379; }
+  .row.active-hit > *:last-child { box-shadow: 4px 0 0 0 #e08a90; }
   .total > * {
     color: %[2]s;
     font-weight: bold;
@@ -126,12 +147,12 @@ func Render(d Data, refreshSeconds float64, accent string) string {
 <div class="panel">
   <div class="game">%[3]s</div>
   <div class="category">%[4]s</div>
-  <div class="header"><span class="name">Split</span><span class="hits">Hits</span><span class="pb">PB</span></div>
-%[5]s  <div class="total"><span class="name">Total</span><span class="hits">%[6]d</span><span class="pb">%[7]d</span></div>
+  <div class="header"><span class="name">Split</span><span class="hits">Hits</span>%[9]s</div>
+%[5]s  <div class="total"><span class="name">Total</span><span class="hits">%[6]d</span>%[10]s</div>
 </div>
 </body>
 </html>
-`, refresh, accent, html.EscapeString(orDefault(d.Game, "(untitled)")), html.EscapeString(d.Category), rows.String(), d.TotalHits, d.TotalPB)
+`, refresh, accent, html.EscapeString(orDefault(d.Game, "(untitled)")), html.EscapeString(d.Category), rows.String(), d.TotalHits, d.TotalPB, columns, headerPB, totalPB)
 }
 
 func rowStyle(s Split) string {

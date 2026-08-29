@@ -31,7 +31,25 @@ func KeysPath() (string, error) {
 	return filepath.Join(dir, "keys.yaml"), nil
 }
 
-func PresetsPath() (string, error) {
+// PresetsDir returns ~/.config/peeporun/presets/ - one .yaml file per
+// preset, so a single preset can be shared/imported just by handing
+// someone that one file.
+func PresetsDir() (string, error) {
+	dir, err := Dir()
+	if err != nil {
+		return "", err
+	}
+	presetsDir := filepath.Join(dir, "presets")
+	if err := os.MkdirAll(presetsDir, 0o755); err != nil {
+		return "", err
+	}
+	return presetsDir, nil
+}
+
+// LegacyPresetsPath is the old single-file presets.yaml location, kept
+// around only so LoadPresets can detect and migrate it on first run
+// after upgrading to the folder-per-preset layout.
+func LegacyPresetsPath() (string, error) {
 	dir, err := Dir()
 	if err != nil {
 		return "", err

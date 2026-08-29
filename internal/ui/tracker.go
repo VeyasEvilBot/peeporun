@@ -178,10 +178,15 @@ func (a *App) viewTracker() string {
 		nameW = 10
 	}
 
+	showPB := a.theme.ShowPB
+
 	// row prefix is: 2-char marker + 1-char check + 1-char space = 4 cols,
 	// so the header needs the same left offset to line up under names.
 	const rowPrefix = 4
-	header := strings.Repeat(" ", rowPrefix) + padRight("Split", nameW) + padLeft("Hits", 6) + padLeft("PB", 7)
+	header := strings.Repeat(" ", rowPrefix) + padRight("Split", nameW) + padLeft("Hits", 6)
+	if showPB {
+		header += padLeft("PB", 7)
+	}
 
 	totalHits, totalPB := 0, 0
 	type rowInfo struct {
@@ -208,7 +213,10 @@ func (a *App) viewTracker() string {
 			}
 		}
 
-		row := marker + check + " " + padRight(name, nameW) + padLeft(fmtInt(st.Hits), 6) + padLeft(fmtInt(pb.Hits), 7)
+		row := marker + check + " " + padRight(name, nameW) + padLeft(fmtInt(st.Hits), 6)
+		if showPB {
+			row += padLeft(fmtInt(pb.Hits), 7)
+		}
 
 		kind := 0
 		switch {
@@ -224,7 +232,10 @@ func (a *App) viewTracker() string {
 		rows[i] = rowInfo{text: row, kind: kind}
 	}
 
-	totalRow := strings.Repeat(" ", rowPrefix) + padRight("Total", nameW) + padLeft(fmtInt(totalHits), 6) + padLeft(fmtInt(totalPB), 7)
+	totalRow := strings.Repeat(" ", rowPrefix) + padRight("Total", nameW) + padLeft(fmtInt(totalHits), 6)
+	if showPB {
+		totalRow += padLeft(fmtInt(totalPB), 7)
+	}
 
 	kb := a.kb
 	help1 := joinHelp(

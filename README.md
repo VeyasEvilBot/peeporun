@@ -5,10 +5,10 @@
 ## Features
 
 - Track your Hits over the Course of a whole Run
-- HTML Overlay for your Stream via overlay.html
-- Customizable Splits / Presets in the TUI or via presets.yaml
-- Customizable Keybindings via keys.yaml
-- Customizable Theme color with Hex Codes via theme.yaml
+- HTML Overlay for your Stream via `overlay.html`
+- Customizable Splits / Presets in the TUI or via `.yaml files`
+- Customizable Keybindings via `keys.yaml`
+- Customizable Theme color with Hex Codes via `theme.yaml`
 
 ## Installation
 
@@ -64,16 +64,16 @@ Extract it and run the peeporun.exe
 
 On first launch, peepoRun creates (if missing):
 
-| File                              | Purpose                                        |
-| --------------------------------- | ---------------------------------------------- |
-| `~/.config/peeporun/keys.yaml`    | Keybindings                                    |
-| `~/.config/peeporun/presets.yaml` | Your presets (DS1 / DS2 / DS3 Any% built in)   |
-| `~/.config/peeporun/save.yaml`    | Current run + PB per preset                    |
-| `~/.config/peeporun/overlay.html` | Overlay for Streaming                          |
-| `~/.config/peeporun/overlay.yaml` | Turn the Overlay off or on                     |
-| `~/.config/peeporun/theme.yaml`   | Change the Accent Color of the TUI and Overlay |
+| File                              | Purpose                                                             |
+| --------------------------------- | ------------------------------------------------------------------- |
+| `~/.config/peeporun/keys.yaml`    | Keybindings                                                         |
+| `~/.config/peeporun/presets/`     | Your presets, one `.yaml` file each (DS1 / DS2 / DS3 Any% built in) |
+| `~/.config/peeporun/save.yaml`    | Current run + PB per preset                                         |
+| `~/.config/peeporun/overlay.html` | Overlay for Streaming                                               |
+| `~/.config/peeporun/overlay.yaml` | Turn the Overlay off or on                                          |
+| `~/.config/peeporun/theme.yaml`   | Change the Accent Color of the TUI and Overlay                      |
 
-(On Windows: `%AppData%\peeporun\`.)
+(On Windows: `%AppData%\peeporun\`)
 
 ## Default keybinds
 
@@ -124,8 +124,8 @@ Inside the preset editor:
 - `S`  opens the "save as PB?" confirmation manually
 - `D` clears the current preset's PB entirely
 - `R` resets the current run's hits/progress back to 0
-- A beaten split shows green **0 hits** on
-  it, or red if you took **1 or more hits**.
+- A beaten split shows green with a checkmark if you took **0 hits** on
+  it, or red with an ✗ if you took **1 or more hits**.
 - When the **last** split in a preset is beaten, if the run's total hits is
   lower than the saved PB (or there's no PB yet), you'll be asked to save
   it as the new Personal Best.
@@ -145,7 +145,19 @@ These Presets are the Splits I personally use for DS1 - DS3.
   Abyss Watchers → Wolnir → Dancer → Deacons → Pontiff → Aldrich →
   Yhorm → Dragonslayer Armor → Twin Princes → Soul of Cinder
 
-Add your own via the TUI editor or by hand editing `presets.yaml`.
+Add your own via the TUI editor, or by hand-editing / dropping in files
+under `~/.config/peeporun/presets/`. Each preset is its own file (e.g.
+`ds3-any.yaml`), named after the preset it represents:
+
+```yaml
+game: Dark Souls III
+category: Any%
+splits:
+    - Gundyr
+    - Vordt
+    - Crystal Sage
+    # ...
+```
 
 ## Using peepoRun as an OBS overlay
 
@@ -190,3 +202,14 @@ black and white depending on how bright the color you pick is, so it
 stays readable even with a very dark or very light accent. If the value
 isn't a valid `#RRGGBB` hex color, peepoRun falls back to the
 default yellow.
+
+`theme.yaml` also has a `show_pb` setting:
+
+```yaml
+show_pb: true
+```
+
+Set it to `false` to hide the PB column entirely — in **both** the TUI
+and the overlay at once, since it's one shared setting rather than two
+separate ones. Useful if you only care about hits for a given run and
+don't want the PB comparison cluttering the view (or your stream).

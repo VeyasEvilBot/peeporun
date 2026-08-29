@@ -126,8 +126,10 @@ func (a *App) commitEditField() {
 	switch a.editAction {
 	case "game":
 		p.Game = val
+		a.maybeAutoRenamePresetID(p)
 	case "category":
 		p.Category = val
+		a.maybeAutoRenamePresetID(p)
 	case "rename-split":
 		if a.editCursor >= 0 && a.editCursor < len(p.Splits) {
 			p.Splits[a.editCursor] = val
@@ -138,6 +140,81 @@ func (a *App) commitEditField() {
 	}
 	a.syncSaveShapeFor(*p)
 	a.persist()
+}
+
+// maybeAutoRenamePresetID gives a freshly-created preset a real filename
+// derived from its Game/Category as soon as you name it, instead of it
+// staying "new-preset.yaml" forever. It only ever touches presets whose ID
+// still looks auto-generated ("new-preset", "new-preset-2", ...) - once a
+// preset has a real ID (including all the built-in DS1/DS2/DS3 presets,
+// and any preset that's already been auto-renamed once), further edits to
+// its Game/Category never change its ID/filename again. That keeps
+// shared/established preset files stable while still solving the
+// "new-preset.yaml" problem for brand new ones.
+func (a *App) maybeAutoRenamePresetID(p *config.Preset) {
+	if !isGenericPresetID(p.ID) && !a.autoNamedIDs[p.ID] {
+		return
+	}
+
+	base := slugify(p.Game)
+	if cat := slugify(p.Category); cat != "" {
+		if base != "" {
+			base += "-"
+		}
+		base += cat
+	}
+	if base == "" {
+		return
+	}
+
+	others := make([]config.Preset, 0, len(a.presets))
+	for _, other := range a.presets {
+		if other.ID != p.ID {
+			others = append(others, other)
+		}
+	}
+	newID := uniquePresetID(others, base)
+	if newID == p.ID {
+		return
+	}
+
+	oldID := p.ID
+	if ps, ok := a.save.Presets[oldID]; ok {
+		delete(a.save.Presets, oldID)
+		a.save.Presets[newID] = ps
+	}
+	if a.save.LastPreset == oldID {
+		a.save.LastPreset = newID
+	}
+	delete(a.autoNamedIDs, oldID)
+	a.autoNamedIDs[newID] = true
+	p.ID = newID
+}
+
+func isGenericPresetID(id string) bool {
+	return id == "new-preset" || strings.HasPrefix(id, "new-preset-")
+}
+
+// slugify turns arbitrary text into a lowercase, hyphen-separated,
+// filesystem-safe token, e.g. "Dark Souls III" -> "dark-souls-iii",
+// "Any%" -> "any".
+func slugify(s string) string {
+	s = strings.ToLower(strings.TrimSpace(s))
+	var b strings.Builder
+	lastHyphen := false
+	for _, r := range s {
+		switch {
+		case (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9'):
+			b.WriteRune(r)
+			lastHyphen = false
+		default:
+			if !lastHyphen && b.Len() > 0 {
+				b.WriteByte('-')
+				lastHyphen = true
+			}
+		}
+	}
+	return strings.TrimRight(b.String(), "-")
 }
 
 func (a *App) doDeleteSplit() {

@@ -52,6 +52,7 @@ func main() {
 	app := ui.NewApp(kb, presets, save, overlaySettings, theme)
 
 	p := tea.NewProgram(app, tea.WithAltScreen())
+
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(1)

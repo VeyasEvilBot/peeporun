@@ -72,9 +72,11 @@ type OverlaySettings struct {
 	RefreshSeconds float64 `yaml:"refresh_seconds"`
 }
 
-// ThemeSettings controls the accent color shared by the TUI and the overlay.
+// ThemeSettings controls the accent color shared by the TUI and the overlay,
+// plus other display preferences shared between the two.
 type ThemeSettings struct {
 	AccentColor string `yaml:"accent_color"`
+	ShowPB      bool   `yaml:"show_pb"`
 }
 
 // SaveFile is the on-disk shape of save.yaml.

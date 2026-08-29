@@ -46,6 +46,7 @@ func (a *App) updatePresetSelect(key string) (tea.Model, tea.Cmd) {
 			Splits:   []string{},
 		}
 		a.presets = append(a.presets, np)
+		a.autoNamedIDs[np.ID] = true
 		a.editPresetIdx = len(a.presets) - 1
 		a.editCursor = -2
 		a.screen = screenPresetEdit
