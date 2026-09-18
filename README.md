@@ -60,6 +60,24 @@ Extract it and run the peeporun.exe
 
 *It will show a "Windows protected your PC" prompt — this is because peepoRun is not code-signed, not because it's harmful. Click "More info" → "Run anyway".*
 
+## Usage
+Run `peeporun` to launch the TUI.
+```bash
+Usage: peeporun [COMMAND] [ARGS]
+
+Commands:
+  hit             Add a hit to the current split of an already-running instance
+  undo            Remove a hit from the current split
+  split           Mark the current split beaten and advance
+  reset           Reset the current run to 0 hits (no confirmation)
+  preset <id>     Switch to a different preset by ID
+  help            Print this help message
+
+Options:
+  -v, --version   Print version and exit
+  -h, --help      Print this help message
+```
+
 ## First Launch
 
 On first launch, peepoRun creates (if missing):
@@ -113,6 +131,7 @@ Inside the preset editor:
 | `d`                                | Delete the selected split (confirmation required)       |
 | `K` / `J` or `Shift+↑` / `Shift+↓` | Move the selected split up / down                       |
 | `Esc`                              | Back to preset select                                   |
+
 
 ## How the Hit Counter works
 

@@ -2,10 +2,12 @@ package ui
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"peeporun/internal/config"
+	"peeporun/internal/ipc"
 	"peeporun/internal/overlay"
 )
 
@@ -106,6 +108,9 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		a.width, a.height = msg.Width, msg.Height
+		return a, nil
+	case ipc.Command:
+		a.handleIPCCommand(msg)
 		return a, nil
 	case tea.KeyMsg:
 		key := msg.String()
@@ -217,6 +222,86 @@ func (a *App) firstUnbeatenOrZero() int {
 		return 0
 	}
 	return len(p.Splits) - 1
+}
+
+// handleIPCCommand executes a command received from `peeporun hit`,
+// `peeporun split`, etc. (see internal/ipc) and reports the outcome back
+// on cmd.Result exactly once. This runs on the same goroutine as normal
+// keypress handling, so it's safe to touch app state directly here -
+// that's the whole point of routing external commands through the Bubble
+// Tea message loop instead of handling them on their own goroutine.
+func (a *App) handleIPCCommand(cmd ipc.Command) {
+	res := ipc.Result{}
+	defer func() { cmd.Result <- res }()
+
+	noPreset := func() {
+		res.OK = false
+		res.Msg = "no preset loaded - open peepoRun and select one first"
+	}
+
+	switch cmd.Action {
+	case "hit":
+		if len(a.presets) == 0 || !a.presetLoaded {
+			noPreset()
+			return
+		}
+		a.addHit(1)
+		res.OK = true
+	case "undo":
+		if len(a.presets) == 0 || !a.presetLoaded {
+			noPreset()
+			return
+		}
+		a.addHit(-1)
+		res.OK = true
+	case "split":
+		if len(a.presets) == 0 || !a.presetLoaded {
+			noPreset()
+			return
+		}
+		a.beatCurrentAndAdvance()
+		res.OK = true
+	case "reset":
+		// Deliberately skips the confirmation dialog the R key shows in
+		// the TUI - this path is meant for hotkey/CLI use while tabbed
+		// into the game, where there's no way to interact with a dialog
+		// sitting in a terminal you're not looking at.
+		if len(a.presets) == 0 || !a.presetLoaded {
+			noPreset()
+			return
+		}
+		a.resetRun()
+		res.OK = true
+	case "preset":
+		if cmd.Arg == "" {
+			res.OK = false
+			res.Msg = "usage: peeporun preset <id>"
+			return
+		}
+		idx := -1
+		for i, p := range a.presets {
+			if strings.EqualFold(p.ID, cmd.Arg) {
+				idx = i
+				break
+			}
+		}
+		if idx == -1 {
+			res.OK = false
+			res.Msg = "no such preset: " + cmd.Arg
+			return
+		}
+		a.presetIdx = idx
+		a.presetLoaded = true
+		a.syncSaveShape()
+		a.cursor = a.firstUnbeatenOrZero()
+		a.screen = screenTracker
+		a.persist()
+		res.OK = true
+		res.Msg = "switched to " + a.presets[idx].ID
+	default:
+		res.OK = false
+		res.Msg = "unknown command: " + cmd.Action
+	}
 }
 
 func (a *App) persist() {

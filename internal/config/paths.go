@@ -88,3 +88,19 @@ func ThemePath() (string, error) {
 	}
 	return filepath.Join(dir, "theme.yaml"), nil
 }
+
+// SocketPath returns the local Unix socket path used for CLI/hotkey
+// control (`peeporun hit`, `peeporun split`, etc. talking to an already
+// running instance). Prefers $XDG_RUNTIME_DIR (ephemeral, per-login-session,
+// cleaned up automatically by the OS) when set, falling back to the config
+// dir otherwise. Windows has no real equivalent to Unix sockets in the same
+// way, so this feature is effectively Linux/macOS-only for now.
+func SocketPath() string {
+	if rt := os.Getenv("XDG_RUNTIME_DIR"); rt != "" {
+		return filepath.Join(rt, "peeporun.sock")
+	}
+	if dir, err := Dir(); err == nil {
+		return filepath.Join(dir, "peeporun.sock")
+	}
+	return filepath.Join(os.TempDir(), "peeporun.sock")
+}
