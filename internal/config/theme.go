@@ -4,10 +4,28 @@ import (
 	"os"
 	"regexp"
 
-	"gopkg.in/yaml.v3"
+	"github.com/BurntSushi/toml"
 )
 
 const DefaultAccentColor = "#FFD400"
+
+// NamedColor is a quick-pick color for the in-TUI theme picker.
+type NamedColor struct {
+	Name  string // display name, e.g. "Red"
+	Color string // "#RRGGBB" hex
+}
+
+// ThemePresets are the named colors available in the theme picker.
+var ThemePresets = []NamedColor{
+	{"Red", "#ff5f5f"},
+	{"Orange", "#ff8800"},
+	{"Yellow", "#FFD400"},
+	{"Green", "#5fd75f"},
+	{"Blue", "#4488ff"},
+	{"Light Blue", "#5fafff"},
+	{"Pink", "#ff5faf"},
+	{"Purple", "#af5fff"},
+}
 
 var hexColorRe = regexp.MustCompile(`^#[0-9A-Fa-f]{6}$`)
 
@@ -20,10 +38,10 @@ func DefaultTheme() ThemeSettings {
 	return ThemeSettings{AccentColor: DefaultAccentColor, ShowPB: true}
 }
 
-// LoadTheme reads theme.yaml, creating it with the defaults on first run.
+// LoadTheme reads theme.toml, creating it with the defaults on first run.
 // If the configured color isn't a valid "#RRGGBB" hex string, it falls
 // back to the default rather than failing to start. If show_pb is absent
-// from an older theme.yaml (from before this setting existed), it
+// from an older theme.toml (from before this setting existed), it
 // defaults to true rather than Go's normal bool zero-value, so upgrading
 // doesn't silently hide PB for existing users.
 func LoadTheme() (ThemeSettings, error) {
@@ -45,11 +63,11 @@ func LoadTheme() (ThemeSettings, error) {
 	}
 
 	var raw map[string]interface{}
-	_ = yaml.Unmarshal(data, &raw) // best-effort, just to check key presence
+	_ = toml.Unmarshal(data, &raw) // best-effort, just to check key presence
 	_, hasShowPB := raw["show_pb"]
 
 	var t ThemeSettings
-	if err := yaml.Unmarshal(data, &t); err != nil {
+	if err := toml.Unmarshal(data, &t); err != nil {
 		return ThemeSettings{}, err
 	}
 	if !ValidHexColor(t.AccentColor) {
@@ -66,7 +84,7 @@ func SaveTheme(t ThemeSettings) error {
 	if err != nil {
 		return err
 	}
-	data, err := yaml.Marshal(t)
+	data, err := toml.Marshal(t)
 	if err != nil {
 		return err
 	}

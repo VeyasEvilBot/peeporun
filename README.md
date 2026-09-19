@@ -6,9 +6,10 @@
 
 - Track your Hits over the Course of a whole Run
 - HTML Overlay for your Stream via `overlay.html`
-- Customizable Splits / Presets in the TUI or via `.yaml files`
-- Customizable Keybindings via `keys.yaml`
-- Customizable Theme color with Hex Codes via `theme.yaml`
+- Customizable Splits / Presets in the TUI or via `.toml files`
+- Customizable Keybindings via `keys.toml`
+- Customizable Theme color with Hex Codes via `theme.toml`
+- In-TUI Theme Picker (`t` in the preset select screen) — pick a named color (Red, Orange, Yellow, Green, Blue, Light Blue, Pink, Purple) or enter a custom `#RRGGBB` hex code. Changes apply instantly to both the TUI and the OBS overlay.
 
 ## Installation
 
@@ -82,22 +83,22 @@ Options:
 
 On first launch, peepoRun creates (if missing):
 
-| File                              | Purpose                                                             |
+| File                              | Purpose                                                              |
 | --------------------------------- | ------------------------------------------------------------------- |
-| `~/.config/peeporun/keys.yaml`    | Keybindings                                                         |
-| `~/.config/peeporun/presets/`     | Your presets, one `.yaml` file each (DS1 / DS2 / DS3 Any% built in) |
-| `~/.config/peeporun/save.yaml`    | Current run + PB per preset                                         |
+| `~/.config/peeporun/keys.toml`    | Keybindings                                                         |
+| `~/.config/peeporun/presets/`     | Your presets, one `.toml` file each (DS1 / DS2 / DS3 Any% built in) |
+| `~/.config/peeporun/save.toml`    | Current run + PB per preset                                         |
 | `~/.config/peeporun/overlay.html` | Overlay for Streaming                                               |
-| `~/.config/peeporun/overlay.yaml` | Turn the Overlay off or on                                          |
-| `~/.config/peeporun/theme.yaml`   | Change the Accent Color of the TUI and Overlay                      |
+| `~/.config/peeporun/overlay.toml` | Turn the Overlay off or on                                         |
+| `~/.config/peeporun/theme.toml`   | Change the Accent Color of the TUI and Overlay                     |
 
-(On Windows: `%AppData%\peeporun\`)
+(On Windows: `%AppData%\\peeporun\\`)
 
 ## Default keybinds
 
 Inside the Preset:
 
-| Key              | Action                                                            |
+| Key               | Action                                                            |
 | ---------------- | ----------------------------------------------------------------- |
 | `↑`/`k`, `↓`/`j` | Move cursor between splits                                        |
 | `+` / `=`        | Add a hit to the split under the cursor                           |
@@ -112,13 +113,14 @@ Inside the Preset:
 
 Inside the preset select screen:
 
-| Key              | Action                                         |
+| Key               | Action                                         |
 | ---------------- | ---------------------------------------------- |
 | `↑`/`k`, `↓`/`j` | Move selection                                 |
 | `Enter`          | Load selected preset into the tracker          |
 | `e`              | Edit selected preset                           |
 | `n`              | Create a new (empty) preset                    |
 | `d`              | Delete selected preset (confirmation required) |
+| `t`              | Open the theme color picker                    |
 | `Esc`            | Back to tracker                                |
 
 Inside the preset editor:
@@ -166,23 +168,20 @@ These Presets are the Splits I personally use for DS1 - DS3.
 
 Add your own via the TUI editor, or by hand-editing / dropping in files
 under `~/.config/peeporun/presets/`. Each preset is its own file (e.g.
-`ds3-any.yaml`), named after the preset it represents:
+`ds3-any.toml`), named after the preset it represents:
 
-```yaml
-game: Dark Souls III
-category: Any%
-splits:
-    - Gundyr
-    - Vordt
-    - Crystal Sage
-    # ...
+```toml
+game = "Dark Souls III"
+category = "Any%"
+splits = ["Gundyr", "Vordt", "Crystal Sage", # ...
+]
 ```
 
 ## Using peepoRun as an OBS overlay
 
 peepoRun automatically writes a live-updating HTML file to
 `~/.config/peeporun/overlay.html` 
-(`%AppData%\peeporun\overlay.html` on Windows),  mirroring exactly what the tracker screen shows, Game,
+(`%AppData%\\peeporun\\overlay.html` on Windows),  mirroring exactly what the tracker screen shows, Game,
 Category, Every Split's Hits and PB.
 
 To show it on stream (OBS):
@@ -191,44 +190,55 @@ To show it on stream (OBS):
 2. Check **Local file**, and point it at `overlay.html` from the path above.
 3. Set a custom width/height if you please
 
-**Settings:** `~/.config/peeporun/overlay.yaml` controls it:
+**Settings:** `~/.config/peeporun/overlay.toml` controls it:
 
-```yaml
-enabled: true
-refresh_seconds: 1.5
+```toml
+enabled = true
+refresh_seconds = 1.5
 ```
 
-Set `enabled: false` to stop writing the file entirely, or tune
+Set `enabled = false` to stop writing the file entirely, or tune
 `refresh_seconds` to make it refresh faster or slower. No preset is
 shown in the overlay until you've actually selected one from the preset
 menu, it stays blank until then.
 
 ## Changing the accent color
+### Per File
 
-`~/.config/peeporun/theme.yaml` (`%AppData%\peeporun\theme.yaml` on
+`~/.config/peeporun/theme.toml` (`%AppData%\\peeporun\\theme.toml` on
 Windows) controls the accent color used across both the TUI and the OBS
 overlay, titles, borders, the "active row" highlight, the Total row,
 all of it:
 
-```yaml
-accent_color: "#FFD400"
+```toml
+accent_color = "#FFD400"
 ```
 
 Change the hex code, save, and relaunch peepoRun.
-Both the TUI and `overlay.html` pick it up automatically and stay in
-sync. Text color on the solid highlighted row auto-switches between
-black and white depending on how bright the color you pick is, so it
-stays readable even with a very dark or very light accent. If the value
-isn't a valid `#RRGGBB` hex color, peepoRun falls back to the
-default yellow.
 
-`theme.yaml` also has a `show_pb` setting:
 
-```yaml
-show_pb: true
+`theme.toml` also has a `show_pb` setting:
+
+```toml
+show_pb = true
 ```
 
 Set it to `false` to hide the PB column entirely — in **both** the TUI
 and the overlay at once, since it's one shared setting rather than two
 separate ones. Useful if you only care about hits for a given run and
 don't want the PB comparison cluttering the view (or your stream).
+
+### Theme Picker (in-TUI)
+
+Press `t` in the preset menu to open the **Theme Picker**:
+
+- **Named colors**: Red, Orange, Yellow (default), Green, Blue, Light Blue,
+  Pink, Purple — navigate with `↑`/`↓` and press `Enter` to apply.
+- **Custom hex**: Navigate to "Custom (#RRGGBB)" (the last entry) and press
+  `Enter` to enter text-input mode, then type any `#RRGGBX` hex color code.
+- **Back**: `Esc` returns to the preset select screen without changes.
+- Changes apply **instantly** to both the TUI and the OBS `overlay.html` —
+  no restart needed. If the value
+isn't a valid `#RRGGBB` hex color, peepoRun falls back to the
+default yellow.
+

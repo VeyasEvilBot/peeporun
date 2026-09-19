@@ -3,35 +3,36 @@ package config
 import (
 	"os"
 
-	"gopkg.in/yaml.v3"
+	"github.com/BurntSushi/toml"
 )
 
 func DefaultKeybinds() Keybinds {
 	return Keybinds{
-		Up:       []string{"up", "k"},
-		Down:     []string{"down", "j"},
-		Hit:      []string{"+", "="},
-		Undo:     []string{"-", "_"},
-		Split:    []string{" ", "space"},
-		Unsplit:  []string{"u"},
-		SavePB:   []string{"S"},
-		DeletePB: []string{"D"},
-		Reset:    []string{"R"},
-		Presets:  []string{"p"},
-		Quit:     []string{"q", "ctrl+c"},
-		Confirm:  []string{"enter", "y"},
-		Cancel:   []string{"esc"},
-		New:      []string{"n"},
-		Edit:     []string{"e"},
-		Delete:   []string{"d"},
-		Add:      []string{"a"},
-		Rename:   []string{"r"},
-		MoveUp:   []string{"K", "shift+up"},
-		MoveDn:   []string{"J", "shift+down"},
+		Up:          []string{"up", "k"},
+		Down:        []string{"down", "j"},
+		Hit:         []string{"+", "="},
+		Undo:        []string{"-", "_"},
+		Split:       []string{" ", "space"},
+		Unsplit:     []string{"u"},
+		SavePB:      []string{"S"},
+		DeletePB:    []string{"D"},
+		Reset:       []string{"R"},
+		Presets:     []string{"p"},
+		Quit:        []string{"q", "ctrl+c"},
+		Confirm:     []string{"enter", "y"},
+		Cancel:      []string{"esc"},
+		New:         []string{"n"},
+		Edit:        []string{"e"},
+		Delete:      []string{"d"},
+		Add:         []string{"a"},
+		Rename:      []string{"r"},
+		MoveUp:      []string{"K", "shift+up"},
+		MoveDn:      []string{"J", "shift+down"},
+		ThemePicker: []string{"t"},
 	}
 }
 
-// LoadKeybinds reads keys.yaml, creating it with defaults on first run.
+// LoadKeybinds reads keys.toml, creating it with defaults on first run.
 func LoadKeybinds() (Keybinds, error) {
 	path, err := KeysPath()
 	if err != nil {
@@ -51,7 +52,7 @@ func LoadKeybinds() (Keybinds, error) {
 	}
 
 	var kb Keybinds
-	if err := yaml.Unmarshal(data, &kb); err != nil {
+	if err := toml.Unmarshal(data, &kb); err != nil {
 		return Keybinds{}, err
 	}
 	return kb, nil
@@ -62,7 +63,7 @@ func SaveKeybinds(kb Keybinds) error {
 	if err != nil {
 		return err
 	}
-	data, err := yaml.Marshal(kb)
+	data, err := toml.Marshal(kb)
 	if err != nil {
 		return err
 	}

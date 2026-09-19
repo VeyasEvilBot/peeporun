@@ -28,10 +28,10 @@ func KeysPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "keys.yaml"), nil
+	return filepath.Join(dir, "keys.toml"), nil
 }
 
-// PresetsDir returns ~/.config/peeporun/presets/ - one .yaml file per
+// PresetsDir returns ~/.config/peeporun/presets/ - one .toml file per
 // preset, so a single preset can be shared/imported just by handing
 // someone that one file.
 func PresetsDir() (string, error) {
@@ -46,7 +46,7 @@ func PresetsDir() (string, error) {
 	return presetsDir, nil
 }
 
-// LegacyPresetsPath is the old single-file presets.yaml location, kept
+// LegacyPresetsPath is the old single-file presets.toml location, kept
 // around only so LoadPresets can detect and migrate it on first run
 // after upgrading to the folder-per-preset layout.
 func LegacyPresetsPath() (string, error) {
@@ -54,7 +54,7 @@ func LegacyPresetsPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "presets.yaml"), nil
+	return filepath.Join(dir, "presets.toml"), nil
 }
 
 func SavePath() (string, error) {
@@ -62,7 +62,7 @@ func SavePath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "save.yaml"), nil
+	return filepath.Join(dir, "save.toml"), nil
 }
 
 func OverlaySettingsPath() (string, error) {
@@ -70,7 +70,7 @@ func OverlaySettingsPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "overlay.yaml"), nil
+	return filepath.Join(dir, "overlay.toml"), nil
 }
 
 func OverlayHTMLPath() (string, error) {
@@ -86,7 +86,7 @@ func ThemePath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "theme.yaml"), nil
+	return filepath.Join(dir, "theme.toml"), nil
 }
 
 // SocketPath returns the local Unix socket path used for CLI/hotkey

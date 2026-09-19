@@ -55,6 +55,11 @@ func (a *App) updatePresetSelect(key string) (tea.Model, tea.Cmd) {
 		if n > 0 {
 			a.confirm = confirmDeletePreset
 		}
+	case config.Matches(key, kb.ThemePicker):
+		a.screen = screenThemePicker
+		a.themeCursor = 0
+		a.themeEditMode = false
+		a.input.SetValue("")
 	case config.Matches(key, kb.Cancel):
 		if a.presetLoaded {
 			a.screen = screenTracker
@@ -140,10 +145,15 @@ func (a *App) viewPresetSelect() string {
 		label(kb.Edit, "edit"),
 		label(kb.New, "new"),
 		label(kb.Delete, "delete"),
+		label(kb.ThemePicker, "theme"),
 	}
 	if a.presetLoaded {
 		parts = append(parts, label(kb.Cancel, "back"))
 	}
 	b.WriteString(StyleHelp.Render(joinHelp(parts...)))
+	if a.status != "" {
+		b.WriteString("\n")
+		b.WriteString(StyleStatus.Render(a.status))
+	}
 	return StyleBox.Render(b.String())
 }

@@ -17,6 +17,7 @@ const (
 	screenTracker screen = iota
 	screenPresetSelect
 	screenPresetEdit
+	screenThemePicker
 )
 
 type confirmKind int
@@ -57,6 +58,10 @@ type App struct {
 	editCursor    int // -2 = game field, -1 = category field, 0..n-1 = split index, n = "add split" row
 	editMode      bool
 	editAction    string // "game", "category", "rename-split", "add-split"
+
+	// theme picker screen
+	themeCursor   int
+	themeEditMode bool // true when typing a custom hex code
 	input         textinput.Model
 
 	// autoNamedIDs tracks preset IDs still eligible for maybeAutoRenamePresetID
@@ -115,6 +120,11 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		key := msg.String()
 
+		// Clear any pending status message on the next keypress.
+		if a.status != "" {
+			a.status = ""
+		}
+
 		// global quit (only when not typing in a text field)
 		if !a.inputActive() && config.Matches(key, a.kb.Quit) {
 			a.persist()
@@ -132,6 +142,8 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return a.updatePresetSelect(key)
 		case screenPresetEdit:
 			return a.updatePresetEdit(msg)
+		case screenThemePicker:
+			return a.updateThemePicker(msg)
 		}
 	}
 	return a, nil
@@ -150,6 +162,8 @@ func (a *App) View() string {
 		body = a.viewPresetSelect()
 	case screenPresetEdit:
 		body = a.viewPresetEdit()
+	case screenThemePicker:
+		body = a.viewThemePicker()
 	}
 
 	if a.confirm != confirmNone {

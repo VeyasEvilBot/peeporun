@@ -3,7 +3,7 @@ package config
 import (
 	"os"
 
-	"gopkg.in/yaml.v3"
+	"github.com/BurntSushi/toml"
 )
 
 func DefaultOverlaySettings() OverlaySettings {
@@ -13,7 +13,7 @@ func DefaultOverlaySettings() OverlaySettings {
 	}
 }
 
-// LoadOverlaySettings reads overlay.yaml, creating it with defaults on first run.
+// LoadOverlaySettings reads overlay.toml, creating it with defaults on first run.
 func LoadOverlaySettings() (OverlaySettings, error) {
 	path, err := OverlaySettingsPath()
 	if err != nil {
@@ -33,7 +33,7 @@ func LoadOverlaySettings() (OverlaySettings, error) {
 	}
 
 	var os2 OverlaySettings
-	if err := yaml.Unmarshal(data, &os2); err != nil {
+	if err := toml.Unmarshal(data, &os2); err != nil {
 		return OverlaySettings{}, err
 	}
 	if os2.RefreshSeconds <= 0 {
@@ -47,7 +47,7 @@ func SaveOverlaySettings(s OverlaySettings) error {
 	if err != nil {
 		return err
 	}
-	data, err := yaml.Marshal(s)
+	data, err := toml.Marshal(s)
 	if err != nil {
 		return err
 	}

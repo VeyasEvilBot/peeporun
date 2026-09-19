@@ -3,7 +3,7 @@ package config
 import (
 	"os"
 
-	"gopkg.in/yaml.v3"
+	"github.com/BurntSushi/toml"
 )
 
 func LoadSave() (SaveFile, error) {
@@ -21,7 +21,7 @@ func LoadSave() (SaveFile, error) {
 	}
 
 	var sf SaveFile
-	if err := yaml.Unmarshal(data, &sf); err != nil {
+	if err := toml.Unmarshal(data, &sf); err != nil {
 		return SaveFile{}, err
 	}
 	if sf.Presets == nil {
@@ -35,7 +35,7 @@ func SaveState(sf SaveFile) error {
 	if err != nil {
 		return err
 	}
-	data, err := yaml.Marshal(sf)
+	data, err := toml.Marshal(sf)
 	if err != nil {
 		return err
 	}

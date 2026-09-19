@@ -11,7 +11,7 @@ import (
 )
 
 // version is set at build time via -ldflags "-X main.version=..."
-// (see .goreleaser.yaml). Defaults to "dev" for local `go build`.
+// (see .goreleaser.toml). Defaults to "dev" for local `go build`.
 var version = "dev"
 
 // commandActions are the subcommands that control an already-running

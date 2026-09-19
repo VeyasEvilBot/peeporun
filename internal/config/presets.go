@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"gopkg.in/yaml.v3"
+	"github.com/BurntSushi/toml"
 )
 
 func DefaultPresets() []Preset {
@@ -76,17 +76,17 @@ func DefaultPresets() []Preset {
 
 // presetFile is the on-disk shape of a single preset file. It deliberately
 // has no ID field - a preset's ID is always just its filename (without
-// .yaml), so sharing a preset is literally just sharing this one file and
+// .toml), so sharing a preset is literally just sharing this one file and
 // dropping it into someone else's presets/ folder, with no internal ID to
 // worry about colliding or keeping in sync with the filename.
 type presetFile struct {
-	Game     string   `yaml:"game"`
-	Category string   `yaml:"category"`
-	Splits   []string `yaml:"splits"`
+	Game     string   `toml:"game"`
+	Category string   `toml:"category"`
+	Splits   []string `toml:"splits"`
 }
 
 func presetFilePath(dir, id string) string {
-	return filepath.Join(dir, sanitizeFilename(id)+".yaml")
+	return filepath.Join(dir, sanitizeFilename(id)+".toml")
 }
 
 // sanitizeFilename keeps preset IDs safe to use as filenames - guards
@@ -97,9 +97,9 @@ func sanitizeFilename(id string) string {
 	return r.Replace(id)
 }
 
-// LoadPresets loads every preset from ~/.config/peeporun/presets/*.yaml,
+// LoadPresets loads every preset from ~/.config/peeporun/presets/*.toml,
 // one preset per file, with the preset's ID always taken from the
-// filename. On first run it migrates an old single-file presets.yaml if
+// filename. On first run it migrates an old single-file presets.toml if
 // one exists (preserving each preset's original ID, so existing save
 // data / PBs still line up correctly), or falls back to the built-in
 // DS1/DS2/DS3 defaults if nothing exists yet at all.
@@ -116,7 +116,7 @@ func LoadPresets() ([]Preset, error) {
 
 	var files []os.DirEntry
 	for _, e := range entries {
-		if !e.IsDir() && strings.HasSuffix(e.Name(), ".yaml") {
+		if !e.IsDir() && strings.HasSuffix(e.Name(), ".toml") {
 			files = append(files, e)
 		}
 	}
@@ -144,10 +144,10 @@ func LoadPresets() ([]Preset, error) {
 			return nil, err
 		}
 		var pf presetFile
-		if err := yaml.Unmarshal(data, &pf); err != nil {
+		if err := toml.Unmarshal(data, &pf); err != nil {
 			return nil, err
 		}
-		id := strings.TrimSuffix(f.Name(), ".yaml")
+		id := strings.TrimSuffix(f.Name(), ".toml")
 		presets = append(presets, Preset{
 			ID:       id,
 			Game:     pf.Game,
@@ -158,10 +158,10 @@ func LoadPresets() ([]Preset, error) {
 	return presets, nil
 }
 
-// migrateLegacyPresets checks for an old single-file presets.yaml and, if
+// migrateLegacyPresets checks for an old single-file presets.toml and, if
 // found, splits it into individual files in dir (using each preset's
-// existing ID as the filename, so save.yaml's per-preset progress/PB data
-// still matches up). The old file is renamed to presets.yaml.bak rather
+// existing ID as the filename, so save.toml's per-preset progress/PB data
+// still matches up). The old file is renamed to presets.toml.bak rather
 // than deleted, as a safety net. Returns nil (with no error) if there was
 // nothing to migrate.
 func migrateLegacyPresets(dir string) ([]Preset, error) {
@@ -178,7 +178,7 @@ func migrateLegacyPresets(dir string) ([]Preset, error) {
 	}
 
 	var pf PresetsFile
-	if err := yaml.Unmarshal(data, &pf); err != nil {
+	if err := toml.Unmarshal(data, &pf); err != nil {
 		return nil, err
 	}
 	if len(pf.Presets) == 0 {
@@ -198,7 +198,7 @@ func migrateLegacyPresets(dir string) ([]Preset, error) {
 }
 
 func writePresetFile(dir string, p Preset) error {
-	data, err := yaml.Marshal(presetFile{
+	data, err := toml.Marshal(presetFile{
 		Game:     p.Game,
 		Category: p.Category,
 		Splits:   p.Splits,
@@ -223,7 +223,7 @@ func SavePresets(presets []Preset) error {
 		if err := writePresetFile(dir, p); err != nil {
 			return err
 		}
-		keep[sanitizeFilename(p.ID)+".yaml"] = true
+		keep[sanitizeFilename(p.ID)+".toml"] = true
 	}
 
 	entries, err := os.ReadDir(dir)
@@ -231,7 +231,7 @@ func SavePresets(presets []Preset) error {
 		return err
 	}
 	for _, e := range entries {
-		if e.IsDir() || !strings.HasSuffix(e.Name(), ".yaml") {
+		if e.IsDir() || !strings.HasSuffix(e.Name(), ".toml") {
 			continue
 		}
 		if !keep[e.Name()] {

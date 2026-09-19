@@ -37,6 +37,7 @@ var (
 	StyleHelp        lipgloss.Style
 	StyleBox         lipgloss.Style
 	StyleModal       lipgloss.Style
+	StyleStatus      lipgloss.Style
 )
 
 func init() {
@@ -44,7 +45,7 @@ func init() {
 }
 
 // SetAccentColor changes the shared accent color and rebuilds every style
-// that depends on it. Call once at startup after loading theme.yaml.
+// that depends on it. Call once at startup after loading theme.toml.
 func SetAccentColor(hex string) {
 	if hex == "" {
 		return
@@ -113,6 +114,10 @@ func rebuildStyles() {
 		BorderForeground(ColorAccent).
 		Padding(1, 2).
 		Bold(true)
+
+	StyleStatus = lipgloss.NewStyle().
+		Bold(true).
+		Foreground(ColorGood)
 }
 
 // contrastText picks black or white text depending on the perceived

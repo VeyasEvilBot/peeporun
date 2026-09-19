@@ -144,13 +144,13 @@ func (a *App) commitEditField() {
 
 // maybeAutoRenamePresetID gives a freshly-created preset a real filename
 // derived from its Game/Category as soon as you name it, instead of it
-// staying "new-preset.yaml" forever. It only ever touches presets whose ID
+// staying "new-preset.toml" forever. It only ever touches presets whose ID
 // still looks auto-generated ("new-preset", "new-preset-2", ...) - once a
 // preset has a real ID (including all the built-in DS1/DS2/DS3 presets,
 // and any preset that's already been auto-renamed once), further edits to
 // its Game/Category never change its ID/filename again. That keeps
 // shared/established preset files stable while still solving the
-// "new-preset.yaml" problem for brand new ones.
+// "new-preset.toml" problem for brand new ones.
 func (a *App) maybeAutoRenamePresetID(p *config.Preset) {
 	if !isGenericPresetID(p.ID) && !a.autoNamedIDs[p.ID] {
 		return
