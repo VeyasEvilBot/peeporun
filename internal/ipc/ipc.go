@@ -19,7 +19,7 @@ import (
 )
 
 // Command is one request from a client (`peeporun hit`, etc.) to the
-// running TUI instance. Action is one of "hit", "undo", "split", "reset",
+// running TUI instance. Action is one of "hit", "undo", "split", "unsplit", "reset",
 // "preset" (Arg is the preset ID for that last one). Result must be sent
 // on exactly once by whoever handles the command.
 type Command struct {

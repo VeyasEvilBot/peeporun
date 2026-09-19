@@ -70,6 +70,7 @@ Commands:
   hit             Add a hit to the current split of an already-running instance
   undo            Remove a hit from the current split
   split           Mark the current split beaten and advance
+  unsplit         Un-beat the current split (or step back to the previous one)
   reset           Reset the current run to 0 hits (no confirmation)
   preset <id>     Switch to a different preset by ID
   help            Print this help message

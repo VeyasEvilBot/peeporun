@@ -275,6 +275,13 @@ func (a *App) handleIPCCommand(cmd ipc.Command) {
 		}
 		a.beatCurrentAndAdvance()
 		res.OK = true
+	case "unsplit":
+		if len(a.presets) == 0 || !a.presetLoaded {
+			noPreset()
+			return
+		}
+		a.unsplit()
+		res.OK = true
 	case "reset":
 		// Deliberately skips the confirmation dialog the R key shows in
 		// the TUI - this path is meant for hotkey/CLI use while tabbed

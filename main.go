@@ -19,7 +19,7 @@ var version = "dev"
 // be bound to hotkeys (e.g. via KDE Custom Shortcuts) or invoked from
 // scripts. See internal/ipc.
 var commandActions = map[string]bool{
-	"hit": true, "undo": true, "split": true, "reset": true, "preset": true,
+	"hit": true, "undo": true, "split": true, "unsplit": true, "reset": true, "preset": true,
 }
 
 func main() {
@@ -56,6 +56,7 @@ Commands:
   hit             Add a hit to the current split of an already-running instance
   undo            Remove a hit from the current split
   split           Mark the current split beaten and advance
+  unsplit         Un-beat the current split (or step back to the previous one)
   reset           Reset the current run to 0 hits (no confirmation)
   preset <id>     Switch to a different preset by ID
   help            Print this help message
