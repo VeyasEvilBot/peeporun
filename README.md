@@ -8,8 +8,7 @@
 - HTML Overlay for your Stream via `overlay.html`
 - Customizable Splits / Presets in the TUI or via `.toml files`
 - Customizable Keybindings via `keys.toml`
-- Customizable Theme color with Hex Codes via `theme.toml`
-- In-TUI Theme Picker (`t` in the preset select screen) — pick a named color (Red, Orange, Yellow, Green, Blue, Light Blue, Pink, Purple) or enter a custom `#RRGGBB` hex code. Changes apply instantly to both the TUI and the OBS overlay.
+- Customizable Theme color with Hex Codes via `theme.toml` or TUI Theme Picker
 
 ## Installation
 
