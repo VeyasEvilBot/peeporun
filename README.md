@@ -34,7 +34,7 @@ tar -xzf peeporun_linux_amd64.tar.gz
 ./peeporun
 ```
 
-### ### Using Go Install
+### Using Go Install
 
 Requires Go 1.22+.
 
