@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"peeporun/internal/config"
+	"github.com/cometpuppy/peeporun/internal/config"
 )
 
 func (a *App) updatePresetSelect(key string) (tea.Model, tea.Cmd) {

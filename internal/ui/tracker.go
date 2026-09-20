@@ -6,7 +6,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"peeporun/internal/config"
+	"github.com/cometpuppy/peeporun/internal/config"
 )
 
 func (a *App) updateTracker(key string) (tea.Model, tea.Cmd) {

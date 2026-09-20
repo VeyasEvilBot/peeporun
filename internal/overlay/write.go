@@ -3,7 +3,7 @@ package overlay
 import (
 	"os"
 
-	"peeporun/internal/config"
+	"github.com/cometpuppy/peeporun/internal/config"
 )
 
 // Write renders the given data and writes it to the configured overlay.html

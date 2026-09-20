@@ -6,9 +6,9 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"peeporun/internal/config"
-	"peeporun/internal/ipc"
-	"peeporun/internal/overlay"
+	"github.com/cometpuppy/peeporun/internal/config"
+	"github.com/cometpuppy/peeporun/internal/ipc"
+	"github.com/cometpuppy/peeporun/internal/overlay"
 )
 
 type screen int

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"peeporun/internal/config"
+	"github.com/cometpuppy/peeporun/internal/config"
 )
 
 // updateThemePicker handles key input for the in-TUI theme color picker.

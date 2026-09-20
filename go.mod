@@ -1,4 +1,4 @@
-module peeporun
+module github.com/cometpuppy/peeporun
 
 go 1.22.2
 

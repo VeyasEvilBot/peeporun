@@ -2,7 +2,7 @@ package ui
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"peeporun/internal/config"
+	"github.com/cometpuppy/peeporun/internal/config"
 )
 
 func (a *App) confirmMessage() string {

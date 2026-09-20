@@ -5,9 +5,9 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"peeporun/internal/config"
-	"peeporun/internal/ipc"
-	"peeporun/internal/ui"
+	"github.com/cometpuppy/peeporun/internal/config"
+	"github.com/cometpuppy/peeporun/internal/ipc"
+	"github.com/cometpuppy/peeporun/internal/ui"
 )
 
 // version is set at build time via -ldflags "-X main.version=..."

@@ -25,14 +25,6 @@ go build -o peeporun .
 ./peeporun
 ```
 
-### With Brew
-
-```bash
-brew install cometpuppy/peeporun/peeporun
-```
-
-Now just run `peeporun` from your Terminal.
-
 ### Using the Prebuilt Binary
 
 Download the peeporun_linux_amd64/arm64.tar.gz from the Releases Page
@@ -41,6 +33,22 @@ Download the peeporun_linux_amd64/arm64.tar.gz from the Releases Page
 tar -xzf peeporun_linux_amd64.tar.gz
 ./peeporun
 ```
+
+### ### Using Go Install
+
+Requires Go 1.22+.
+
+```bash
+go install github.com/cometpuppy/peeporun@latest
+```
+
+### With Brew
+
+```bash
+brew install cometpuppy/peeporun/peeporun
+```
+
+Now just run `peeporun` from your Terminal.
 
 ## Windows
 
@@ -61,7 +69,9 @@ Extract it and run the peeporun.exe
 *It will show a "Windows protected your PC" prompt — this is because peepoRun is not code-signed, not because it's harmful. Click "More info" → "Run anyway".*
 
 ## Usage
+
 Run `peeporun` to launch the TUI.
+
 ```bash
 Usage: peeporun [COMMAND] [ARGS]
 
@@ -83,14 +93,14 @@ Options:
 
 On first launch, peepoRun creates (if missing):
 
-| File                              | Purpose                                                              |
+| File                              | Purpose                                                             |
 | --------------------------------- | ------------------------------------------------------------------- |
 | `~/.config/peeporun/keys.toml`    | Keybindings                                                         |
 | `~/.config/peeporun/presets/`     | Your presets, one `.toml` file each (DS1 / DS2 / DS3 Any% built in) |
 | `~/.config/peeporun/save.toml`    | Current run + PB per preset                                         |
 | `~/.config/peeporun/overlay.html` | Overlay for Streaming                                               |
-| `~/.config/peeporun/overlay.toml` | Turn the Overlay off or on                                         |
-| `~/.config/peeporun/theme.toml`   | Change the Accent Color of the TUI and Overlay                     |
+| `~/.config/peeporun/overlay.toml` | Turn the Overlay off or on                                          |
+| `~/.config/peeporun/theme.toml`   | Change the Accent Color of the TUI and Overlay                      |
 
 (On Windows: `%AppData%\\peeporun\\`)
 
@@ -98,7 +108,7 @@ On first launch, peepoRun creates (if missing):
 
 Inside the Preset:
 
-| Key               | Action                                                            |
+| Key              | Action                                                            |
 | ---------------- | ----------------------------------------------------------------- |
 | `↑`/`k`, `↓`/`j` | Move cursor between splits                                        |
 | `+` / `=`        | Add a hit to the split under the cursor                           |
@@ -113,7 +123,7 @@ Inside the Preset:
 
 Inside the preset select screen:
 
-| Key               | Action                                         |
+| Key              | Action                                         |
 | ---------------- | ---------------------------------------------- |
 | `↑`/`k`, `↓`/`j` | Move selection                                 |
 | `Enter`          | Load selected preset into the tracker          |
@@ -133,7 +143,6 @@ Inside the preset editor:
 | `d`                                | Delete the selected split (confirmation required)       |
 | `K` / `J` or `Shift+↑` / `Shift+↓` | Move the selected split up / down                       |
 | `Esc`                              | Back to preset select                                   |
-
 
 ## How the Hit Counter works
 
@@ -203,6 +212,7 @@ shown in the overlay until you've actually selected one from the preset
 menu, it stays blank until then.
 
 ## Changing the accent color
+
 ### Per File
 
 `~/.config/peeporun/theme.toml` (`%AppData%\\peeporun\\theme.toml` on
@@ -215,7 +225,6 @@ accent_color = "#FFD400"
 ```
 
 Change the hex code, save, and relaunch peepoRun.
-
 
 `theme.toml` also has a `show_pb` setting:
 
@@ -239,6 +248,5 @@ Press `t` in the preset menu to open the **Theme Picker**:
 - **Back**: `Esc` returns to the preset select screen without changes.
 - Changes apply **instantly** to both the TUI and the OBS `overlay.html` —
   no restart needed. If the value
-isn't a valid `#RRGGBB` hex color, peepoRun falls back to the
-default yellow.
-
+  isn't a valid `#RRGGBB` hex color, peepoRun falls back to the
+  default yellow.
