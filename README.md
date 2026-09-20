@@ -243,8 +243,10 @@ Press `t` in the preset menu to open the **Theme Picker**:
 
 - **Named colors**: Red, Orange, Yellow (default), Green, Blue, Light Blue,
   Pink, Purple — navigate with `↑`/`↓` and press `Enter` to apply.
-- **Custom hex**: Navigate to "Custom (#RRGGBB)" (the last entry) and press
+- **Custom hex**: Navigate to "Custom (#RRGGBB)" and press
   `Enter` to enter text-input mode, then type any `#RRGGBX` hex color code.
+- **Show PB**: Toggle the PB column on/off in both the TUI and the
+  overlay, this is the same `show_pb` setting in `theme.toml`.
 - **Back**: `Esc` returns to the preset select screen without changes.
 - Changes apply **instantly** to both the TUI and the OBS `overlay.html` —
   no restart needed. If the value

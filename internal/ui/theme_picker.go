@@ -43,7 +43,8 @@ func (a *App) updateThemePicker(msg tea.Msg) (tea.Model, tea.Cmd) {
 		key = msg.String()
 	}
 
-	lastIdx := len(config.ThemePresets) // index of the "Custom" option
+	customIdx := len(config.ThemePresets) // index of the "Custom" option
+	pbIdx := customIdx + 1                // index of the "Show PB" checkbox
 
 	switch {
 	case config.Matches(key, kb.Up):
@@ -51,11 +52,14 @@ func (a *App) updateThemePicker(msg tea.Msg) (tea.Model, tea.Cmd) {
 			a.themeCursor--
 		}
 	case config.Matches(key, kb.Down):
-		if a.themeCursor < lastIdx {
+		if a.themeCursor < pbIdx {
 			a.themeCursor++
 		}
 	case config.Matches(key, kb.Confirm):
-		if a.themeCursor < lastIdx {
+		if a.themeCursor == pbIdx {
+			// "Show PB" checkbox — toggle in place, stay on this screen
+			a.setShowPB(!a.theme.ShowPB)
+		} else if a.themeCursor < customIdx {
 			// Named color selected
 			hex := config.ThemePresets[a.themeCursor].Color
 			a.setThemeAccent(hex)
@@ -98,6 +102,14 @@ func (a *App) setThemeAccent(hex string) {
 	a.writeOverlay()
 }
 
+// setShowPB updates whether Personal Best is shown in the TUI and overlay,
+// saves it to theme.toml, and triggers an overlay rewrite.
+func (a *App) setShowPB(show bool) {
+	a.theme.ShowPB = show
+	_ = config.SaveTheme(a.theme)
+	a.writeOverlay()
+}
+
 // viewThemePicker renders the theme color picker screen.
 func (a *App) viewThemePicker() string {
 	var b strings.Builder
@@ -124,27 +136,41 @@ func (a *App) viewThemePicker() string {
 		b.WriteString("\n")
 	}
 
-	// Custom (hex) option — last item in the list
-	lastIdx := len(presets)
+	// Custom (hex) option
+	customIdx := len(presets)
 	style := StyleNormalRow
-	if a.themeCursor == lastIdx {
+	if a.themeCursor == customIdx {
 		style = StyleActiveRow
 	}
 	name := "  Custom (#RRGGBB)"
-	if a.themeCursor == lastIdx {
+	if a.themeCursor == customIdx {
 		name = "> Custom (#RRGGBB)"
 	}
 	if a.themeEditMode {
 		name += " — type and Enter"
 	}
 	b.WriteString(style.Render(padRight(name, 22)))
+	b.WriteString("\n\n")
+
+	// Show PB checkbox — last item in the list
+	pbStyle := StyleNormalRow
+	pbPrefix := "  "
+	if a.themeCursor == customIdx+1 {
+		pbStyle = StyleActiveRow
+		pbPrefix = "> "
+	}
+	box := "[ ]"
+	if a.theme.ShowPB {
+		box = "[x]"
+	}
+	b.WriteString(pbStyle.Render(pbPrefix + box + " Show PB"))
 	b.WriteString("\n")
 
 	b.WriteString("\n")
 	kb := a.kb
 	help := joinHelp(
 		pair(kb.Up, kb.Down)+" move",
-		label(kb.Confirm, "apply/select"),
+		label(kb.Confirm, "apply/toggle"),
 		label(kb.Cancel, "back"),
 	)
 	b.WriteString(StyleHelp.Render(help))
