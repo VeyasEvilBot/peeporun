@@ -2,14 +2,6 @@ module github.com/cometpuppy/peeporun
 
 go 1.22.2
 
-replace golang.org/x/sys => github.com/golang/sys v0.24.0
-
-replace golang.org/x/text => github.com/golang/text v0.3.8
-
-replace golang.org/x/sync => github.com/golang/sync v0.8.0
-
-replace golang.org/x/term => github.com/golang/term v0.23.0
-
 require (
 	github.com/BurntSushi/toml v1.4.0
 	github.com/charmbracelet/bubbles v0.20.0
